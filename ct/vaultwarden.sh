@@ -49,6 +49,14 @@ function update_script() {
       VW_VERSION="$VAULT"
       export VW_VERSION
       $STD cargo build --features "sqlite,mysql,postgresql" --release
+      if [[ ! -x target/release/vaultwarden ]]; then
+        msg_error "Build failed"
+        cd ~ && rm -rf /tmp/vaultwarden-src
+        msg_info "Starting Service"
+        systemctl start vaultwarden
+        msg_ok "Started Service"
+        exit 1
+      fi
       if [[ -f /usr/bin/vaultwarden ]]; then
         cp target/release/vaultwarden /usr/bin/
       else
