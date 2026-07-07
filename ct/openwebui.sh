@@ -114,7 +114,13 @@ EOF
 
   msg_info "Updating Open WebUI via uv"
   PYTHON_VERSION="3.12" setup_uv
-  $STD uv tool install --force --python 3.12 --constraint <(echo "numba>=0.60") open-webui[all]
+  OTEL_ARGS=()
+  if [[ -f ~/.openwebui-otel ]]; then
+    while IFS= read -r pkg; do
+      OTEL_ARGS+=(--with "$pkg")
+    done <~/.openwebui-otel
+  fi
+  $STD uv tool install --force --python 3.12 --constraint <(echo "numba>=0.60") "${OTEL_ARGS[@]}" open-webui[all]
   systemctl restart open-webui
   msg_ok "Updated Open WebUI"
   msg_ok "Updated successfully!"
